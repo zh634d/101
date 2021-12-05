@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: git-pipeline
+spec:
+  serviceAccountName: cncamp-sa
+  workspaces:  # 声明 workspaces
+  - name: local
+  resources: # 声明使用的资源
+  - name: git
+    type: git
+  tasks:
+  - name: pull  
+    taskRef:
+      name: github-build
+    resources:  
+      inputs:
+      - name: source
+        resource: git
+    workspaces: 
+    - name:repo
+      workspace: local
+    - name: dockerconfig
+      workspace: dockerconfig
+      mountPath: /kaniko/.docker
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-pipelinerun
+spec:
+  pipelineRef:
+    name: git-pipeline
+  resources:
+  - name: git
+    resourceRef:
+        name: sthx
+  workspaces:
+  - name: local
+    persistentVolumeClaim:
+      claimName: repo-pvc
+  - name: dockerconfig
+    secret:
+      secretName: docker-auth

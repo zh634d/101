@@ -1,0 +1,13 @@
+# workspace-mvn-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mvn-repo-pvc
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  storageClassName: nfs-storage  
+  accessModes:
+    - ReadWriteOnce

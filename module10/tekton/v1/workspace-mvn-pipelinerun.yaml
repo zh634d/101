@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: mvn-pipelinerun
+spec:
+  pipelineRef:
+    name: mvn-pipeline
+  #为resouce赋值  多个task都会用到的资源放在pipline
+  resources:
+  - name: app-git
+    #通过resourceSpec定义或resourceRef引用
+    resourceSpec:
+      type: git
+      params:
+        - name: url
+          value: https://github.com.cnpmjs.org/cnych/spring-petclinic
+  workspaces:
+  - name: local-maven-repo
+    persistentVolumeClaim:
+      claimName: mvn-repo-pvc
